@@ -58,30 +58,60 @@ export async function selectFromList<T extends string>(
   message: string,
   choices: Array<{ value: T; name: string; description?: string }>
 ): Promise<T> {
-  return select({
-    message,
-    choices,
-  });
+  try {
+    return await select({
+      message,
+      choices,
+    });
+  } catch (error) {
+    // Handle Ctrl+C gracefully
+    if (error instanceof Error && error.name === 'ExitPromptError') {
+      console.log('\n');
+      displayInfo('Operation cancelled.');
+      process.exit(0);
+    }
+    throw error;
+  }
 }
 
 /**
  * Ask for confirmation
  */
 export async function askConfirmation(message: string, defaultValue = false): Promise<boolean> {
-  return confirm({
-    message,
-    default: defaultValue,
-  });
+  try {
+    return await confirm({
+      message,
+      default: defaultValue,
+    });
+  } catch (error) {
+    // Handle Ctrl+C gracefully
+    if (error instanceof Error && error.name === 'ExitPromptError') {
+      console.log('\n');
+      displayInfo('Operation cancelled.');
+      process.exit(0);
+    }
+    throw error;
+  }
 }
 
 /**
  * Get text input from user
  */
 export async function getTextInput(message: string, defaultValue?: string): Promise<string> {
-  return input({
-    message,
-    default: defaultValue,
-  });
+  try {
+    return await input({
+      message,
+      default: defaultValue,
+    });
+  } catch (error) {
+    // Handle Ctrl+C gracefully
+    if (error instanceof Error && error.name === 'ExitPromptError') {
+      console.log('\n');
+      displayInfo('Operation cancelled.');
+      process.exit(0);
+    }
+    throw error;
+  }
 }
 
 /**

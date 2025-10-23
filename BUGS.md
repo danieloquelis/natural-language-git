@@ -1,4 +1,4 @@
-1. Using `ctrl+c` or `fn+c` to scape in macbook throws error
+1. Using `ctrl+c` or `fn+c` to quit in macbook throws error (meaning there is not proper way to exit nlgit one doing operations)
 
 ```
 An unexpected error occurred:
@@ -15,33 +15,49 @@ ExitPromptError: User force closed the prompt with SIGINT
     at addChunk (node:internal/streams/readable:559:12)
 ```
 
-2. Everytime I want to run `nlgit "<any git prompt>"` it opens a question `What would you like to do?` and ideally this question should appear when no prompt is given.
-3. running `nlgit --version` does not show up current version and also there is no `nlgit --help` available about how to use.
-4. In the welcoming/onboarding we should show the version and copyright (my name)
-5. Testing with a simple command `what is my current branch` return this with a failure.
+2. Add a configuration for nlgit so we dont show verbose responses but just the human readable text. As of now for error it works properly but for success responses it shows the entire git response. Ideally we should also transform that into a human readable response.
+
+3. Trying to run more advanced commands like "combine last two commits" which should append operations if needed, ideally should have been using interactive rebase and take last two commits and start combining them and then ask the user which commit message should it keep (showing a list to select and an option to enter a new commit message). Instead the result was this:
 
 ```
-✔ What would you like to do? what is my current branch
+nlgit "combine last two commits into one"
+✔ Model ready!
 
-ℹ I'll execute: Display the current branch name
+ℹ I'll execute: Combine the last two commits into a single commit
 
-  git rev-parse --abbrev-ref HEAD
+  git reset --soft HEAD~2
+  git add.
 
-✗ Command failed: git rev-parse --abbrev-ref HEAD
-fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree.
-Use '--' to separate paths from revisions, like this:
-'git <command> [<revision>...] -- [<file>...]'
+
+
+
+
+  git commit -m 'squashed commit'
+
+
+✗ Operation failed
+ℹ Git error:
+git: 'add.' is not a git command. See 'git --help'.
+
+The most similar command is
+	add
 ```
 
-6. Error handling show use LLM to translate into hum readable feedback. For instance when I asked this `see last commit`
+and this as well:
 
 ```
-✔ What would you like to do? see last commit
+nlgit "squash last two commits"
+✔ Model ready!
 
-ℹ I'll execute: Show the most recent commit
+ℹ I'll execute: Squash the last two commits into a single commit
 
-  git log -1
+  git reset --soft HEAD~2
+  git commit -m ''
 
-✗ Command failed: git log -1
-fatal: your current branch 'main' does not have any commits yet
+
+✗ Operation failed
+ℹ This appears to be a newly initialized repository with no commits.
+ℹ Create at least one commit before using this command.
 ```
+
+Ideally the agent should be smart enough to understand what is the intent of the user.

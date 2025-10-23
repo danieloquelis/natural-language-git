@@ -240,11 +240,29 @@ async function main() {
         console.log();
         displaySuccess('Operation completed successfully!');
 
-        // Show output if any
+        // Show output if any and not empty
         const combinedOutput = outputs.join('\n').trim();
         if (combinedOutput) {
           console.log();
-          displayCode(combinedOutput);
+
+          // Provide human-readable summary instead of raw git output
+          // Check if output is just a status/branch name/simple response
+          const lines = combinedOutput.split('\n').filter((line) => line.trim());
+
+          if (lines.length <= 3 && combinedOutput.length < 200) {
+            // Short output - show directly with formatting
+            displayInfo('Result:');
+            for (const line of lines) {
+              console.log(`  ${line}`);
+            }
+          } else {
+            // Longer output - show with code formatting
+            displayInfo('Git output:');
+            displayCode(combinedOutput);
+          }
+        } else {
+          // No output, provide context-based message
+          displayInfo(intent.description || 'Changes applied successfully.');
         }
       }
 
