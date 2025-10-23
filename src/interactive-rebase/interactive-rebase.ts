@@ -19,7 +19,7 @@ const execPromise = promisify(exec);
  * Get list of commits for rebase
  */
 async function getRebaseCommits(count: number, cwd?: string): Promise<RebaseCommit[]> {
-  const { stdout } = await execPromise(`git log -${count} --format=%H|%h|%s`, {
+  const { stdout } = await execPromise(`git log -${count} --format='%H|%h|%s'`, {
     cwd: cwd || process.cwd(),
   });
 
