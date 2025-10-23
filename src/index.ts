@@ -189,12 +189,39 @@ async function main() {
           ? trimmedCmd.substring(4).trim()
           : trimmedCmd;
 
+        // Check for interactive commands that need manual intervention
+        if (
+          commandWithoutGit.includes('rebase -i') ||
+          commandWithoutGit.includes('rebase --interactive')
+        ) {
+          console.log();
+          displayInfo('This operation requires an interactive editor.');
+          displayInfo('NLGit will open your default git editor for you to complete the rebase.');
+          console.log();
+          displayInfo('In the editor that opens:');
+          displayCode('  - Change "pick" to "squash" (or "s") for commits to combine');
+          displayCode('  - Save and close the editor');
+          displayCode('  - Edit the commit message in the next editor that opens');
+          console.log();
+
+          const proceed = await askConfirmation('Open interactive rebase editor?', true);
+          if (!proceed) {
+            displayInfo('Operation cancelled.');
+            process.exit(0);
+          }
+        }
+
         // Split into command and args, handling quoted strings
         const parts = commandWithoutGit.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
         const gitCommand = parts[0] || '';
         const args = parts.slice(1).map((arg) => arg.replace(/^"|"$/g, '')); // Remove quotes
 
-        const result = await executeGitCommand(gitCommand, args);
+        // Mark as interactive if it's an interactive command
+        const isInteractive =
+          commandWithoutGit.includes('rebase -i') ||
+          commandWithoutGit.includes('rebase --interactive');
+
+        const result = await executeGitCommand(gitCommand, args, undefined, isInteractive);
 
         if (result.success) {
           outputs.push(result.output);

@@ -1,4 +1,4 @@
-import { exec } from 'node:child_process';
+import { exec, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
 import type { GitOperationResult } from './git-operations-common.js';
 import {
@@ -46,8 +46,14 @@ export function determineOperationSafety(command: string): OperationSafety {
 export async function executeGitCommand(
   command: string,
   args: string[] = [],
-  cwd?: string
+  cwd?: string,
+  interactive = false
 ): Promise<GitOperationResult> {
+  // For interactive commands, use spawn with inherited stdio
+  if (interactive || args.includes('-i') || args.includes('--interactive')) {
+    return executeInteractiveGitCommand(command, args, cwd);
+  }
+
   const fullCommand = ['git', command, ...args].join(' ');
 
   try {
@@ -68,6 +74,45 @@ export async function executeGitCommand(
       error: err.stderr || err.message,
     };
   }
+}
+
+/**
+ * Execute an interactive git command (with editor)
+ */
+function executeInteractiveGitCommand(
+  command: string,
+  args: string[] = [],
+  cwd?: string
+): Promise<GitOperationResult> {
+  return new Promise((resolve) => {
+    const gitProcess = spawn('git', [command, ...args], {
+      cwd: cwd || process.cwd(),
+      stdio: 'inherit', // Allow user interaction with editor
+    });
+
+    gitProcess.on('close', (code) => {
+      if (code === 0) {
+        resolve({
+          success: true,
+          output: 'Interactive operation completed',
+        });
+      } else {
+        resolve({
+          success: false,
+          output: '',
+          error: `Interactive operation exited with code ${code}`,
+        });
+      }
+    });
+
+    gitProcess.on('error', (error) => {
+      resolve({
+        success: false,
+        output: '',
+        error: error.message,
+      });
+    });
+  });
 }
 
 /**

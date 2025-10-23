@@ -42,6 +42,13 @@ COMMAND QUALITY REQUIREMENTS:
 - Use proper spacing between command, subcommand, and arguments
 - Test commands mentally before outputting
 
+BEST PRACTICES FOR COMMON OPERATIONS:
+- For squashing/combining commits: Use "git rebase -i HEAD~N" (interactive rebase)
+- For amending last commit: Use "git commit --amend"
+- For undoing commits: Use "git reset" with appropriate flags
+- For staging: Use "git add ." (with space before dot) or "git add -A"
+- Interactive operations are preferred when available (rebase -i, add -p, etc.)
+
 OUTPUT FORMAT:
 Respond in JSON format with this structure:
 {
@@ -85,8 +92,8 @@ User: "Squash last two commits"
 Response: {
   "type": "git_operation",
   "confidence": 0.85,
-  "gitCommands": ["git reset --soft HEAD~2", "git commit -m 'Combined previous two commits'"],
-  "description": "Combine the last two commits into one",
+  "gitCommands": ["git rebase -i HEAD~2"],
+  "description": "Start interactive rebase to squash the last two commits",
   "safety": "destructive"
 }
 
@@ -94,8 +101,8 @@ User: "Combine last two commits into one"
 Response: {
   "type": "git_operation",
   "confidence": 0.85,
-  "gitCommands": ["git reset --soft HEAD~2", "git commit -m 'Squashed commits'"],
-  "description": "Merge the last two commits into a single commit",
+  "gitCommands": ["git rebase -i HEAD~2"],
+  "description": "Start interactive rebase to combine the last two commits",
   "safety": "destructive"
 }
 
