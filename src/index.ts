@@ -18,9 +18,71 @@ import {
 } from './ui/index.js';
 
 /**
+ * Show version information
+ */
+function showVersion() {
+  console.log('nlgit version 0.1.0');
+  console.log('Copyright (c) 2025 Daniel Oquelis');
+  console.log('MIT License');
+}
+
+/**
+ * Show help information
+ */
+function showHelp() {
+  console.log('nlgit - Natural Language Git');
+  console.log();
+  console.log('Usage:');
+  console.log('  nlgit "<natural language command>"');
+  console.log('  nlgit                                Interactive mode');
+  console.log('  nlgit --help                         Show this help');
+  console.log('  nlgit --version                      Show version');
+  console.log();
+  console.log('Examples:');
+  console.log('  nlgit "show me the status"');
+  console.log('  nlgit "create a branch called feature-x"');
+  console.log('  nlgit "commit all changes with message \'fix bug\'"');
+  console.log('  nlgit "show last 5 commits"');
+  console.log();
+  console.log('For more information, visit: https://github.com/danieloquelis/natural-language-git');
+}
+
+/**
+ * Handle graceful exit on Ctrl+C
+ */
+function setupGracefulExit() {
+  process.on('SIGINT', () => {
+    console.log('\n');
+    displayInfo('Operation cancelled by user.');
+    process.exit(0);
+  });
+
+  process.on('SIGTERM', () => {
+    console.log('\n');
+    displayInfo('Operation terminated.');
+    process.exit(0);
+  });
+}
+
+/**
  * Main CLI function
  */
 async function main() {
+  // Setup graceful exit handlers
+  setupGracefulExit();
+
+  // Handle CLI flags
+  const args = process.argv.slice(2);
+  if (args.includes('--version') || args.includes('-v')) {
+    showVersion();
+    process.exit(0);
+  }
+
+  if (args.includes('--help') || args.includes('-h')) {
+    showHelp();
+    process.exit(0);
+  }
+
   try {
     // Clean up old logs on startup
     await cleanupOldLogs().catch(() => {
@@ -49,8 +111,17 @@ async function main() {
       }
     }
 
-    // Get user input
-    const userPrompt = await getTextInput('What would you like to do?');
+    // Get user input from arguments or prompt
+    const commandArgs = process.argv.slice(2);
+    let userPrompt: string;
+
+    if (commandArgs.length > 0) {
+      // Command provided as argument (flags already handled above)
+      userPrompt = commandArgs.join(' ');
+    } else {
+      // No argument provided, prompt the user
+      userPrompt = await getTextInput('What would you like to do?');
+    }
 
     if (!userPrompt.trim()) {
       displayInfo('No input provided. Exiting.');
@@ -109,9 +180,19 @@ async function main() {
       const outputs: string[] = [];
 
       for (const cmd of intent.gitCommands) {
-        const parts = cmd.split(' ');
-        const gitCommand = parts[1]; // Skip 'git'
-        const args = parts.slice(2);
+        // Parse the git command properly
+        // Commands come in format: "git <subcommand> [args...]"
+        const trimmedCmd = cmd.trim();
+
+        // Remove 'git ' prefix if present
+        const commandWithoutGit = trimmedCmd.startsWith('git ')
+          ? trimmedCmd.substring(4).trim()
+          : trimmedCmd;
+
+        // Split into command and args, handling quoted strings
+        const parts = commandWithoutGit.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
+        const gitCommand = parts[0] || '';
+        const args = parts.slice(1).map((arg) => arg.replace(/^"|"$/g, '')); // Remove quotes
 
         const result = await executeGitCommand(gitCommand, args);
 
@@ -119,9 +200,28 @@ async function main() {
           outputs.push(result.output);
         } else {
           allSuccess = false;
-          displayError(`Command failed: ${cmd}`);
+
+          // Provide user-friendly error messages
+          console.log();
+          displayError('Operation failed');
+
           if (result.error) {
-            displayCode(result.error);
+            // Check for common git errors and provide helpful messages
+            if (result.error.includes('not have any commits yet')) {
+              displayInfo('This repository has no commits yet. Try creating your first commit:');
+              displayCode('  git add <files>');
+              displayCode('  git commit -m "Initial commit"');
+            } else if (result.error.includes('unknown revision')) {
+              displayInfo('This appears to be a newly initialized repository with no commits.');
+              displayInfo('Create at least one commit before using this command.');
+            } else if (result.error.includes('not a git repository')) {
+              displayInfo('This directory is not a git repository.');
+              displayInfo('Initialize one with: git init');
+            } else {
+              // Show the raw error for other cases
+              displayInfo('Git error:');
+              displayCode(result.error);
+            }
           }
           break;
         }

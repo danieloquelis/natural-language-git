@@ -59,6 +59,9 @@ export async function runOnboarding(): Promise<boolean> {
   // Display welcome
   displayWelcome();
 
+  console.log('Version 0.1.0');
+  console.log('Copyright (c) 2025 Daniel Oquelis\n');
+
   displayHeader('Welcome to NLGit! 🚀');
 
   console.log("Let's get you set up. First, you need to select a language model.\n");
