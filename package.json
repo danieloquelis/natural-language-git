@@ -17,14 +17,8 @@
     "format": "biome format --write .",
     "prepublishOnly": "npm run build"
   },
-  "keywords": [
-    "git",
-    "cli",
-    "natural-language",
-    "llm",
-    "ai"
-  ],
-  "author": "",
+  "keywords": ["git", "cli", "natural-language", "llm", "ai"],
+  "author": "Daniel Oquelis",
   "license": "MIT",
   "engines": {
     "node": ">=20.0.0"

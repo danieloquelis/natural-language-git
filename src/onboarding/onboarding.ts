@@ -1,22 +1,21 @@
-import type { OnboardingState } from './onboarding-common.js';
-import { isOnboardingComplete } from './onboarding-common.js';
-import { readConfig, updateConfig, initializeConfig } from '../config/index.js';
+import { initializeConfig, readConfig, updateConfig } from '../config/index.js';
+import { initializeLLM } from '../llm/index.js';
 import {
-  getAvailableModels,
-  isModelDownloaded,
   downloadModel,
+  getAvailableModels,
   getModelPath,
-  type ModelDefinition,
+  isModelDownloaded,
 } from '../models/index.js';
 import {
-  displayWelcome,
-  selectFromList,
   createSpinner,
-  displaySuccess,
   displayError,
   displayHeader,
+  displaySuccess,
+  displayWelcome,
+  selectFromList,
 } from '../ui/index.js';
-import { initializeLLM } from '../llm/index.js';
+import type { OnboardingState } from './onboarding-common.js';
+import { isOnboardingComplete } from './onboarding-common.js';
 
 /**
  * Check onboarding state
@@ -102,12 +101,10 @@ export async function runOnboarding(): Promise<boolean> {
         spinner.text = `Downloading: ${percent}% (${downloaded}MB / ${total}MB)`;
       });
 
-      spinner.succeed(`Model downloaded successfully!`);
+      spinner.succeed('Model downloaded successfully!');
     } catch (error) {
       spinner.fail('Failed to download model');
-      displayError(
-        error instanceof Error ? error.message : 'Unknown error downloading model'
-      );
+      displayError(error instanceof Error ? error.message : 'Unknown error downloading model');
       return false;
     }
   }

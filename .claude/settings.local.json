@@ -10,7 +10,10 @@
       "Bash(corepack enable)",
       "Bash(corepack prepare:*)",
       "Bash(yarn --version:*)",
-      "Bash(yarn install)"
+      "Bash(yarn install)",
+      "Bash(yarn build:*)",
+      "Bash(yarn lint:*)",
+      "Bash(yarn lint:fix:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 
-import { ensureOnboarding } from './onboarding/index.js';
-import { isGitRepository } from './git-operations/index.js';
-import { parseUserPrompt, getNonGitResponse, IntentType } from './agent/index.js';
-import { executeGitCommand, determineOperationSafety, OperationSafety } from './git-operations/index.js';
-import { addHistoryEntry } from './history/index.js';
+import { IntentType, getNonGitResponse, parseUserPrompt } from './agent/index.js';
 import { cleanupOldLogs } from './config/index.js';
+import { isGitRepository } from './git-operations/index.js';
+import { OperationSafety, executeGitCommand } from './git-operations/index.js';
+import { addHistoryEntry } from './history/index.js';
+import { ensureOnboarding } from './onboarding/index.js';
 import {
+  askConfirmation,
+  createSpinner,
+  displayCode,
   displayError,
   displayInfo,
   displaySuccess,
   displayWarning,
-  displayCode,
-  askConfirmation,
-  createSpinner,
   getTextInput,
 } from './ui/index.js';
 
@@ -86,8 +86,7 @@ async function main() {
 
       // Check safety level
       const requiresConfirmation =
-        intent.safety === OperationSafety.DESTRUCTIVE ||
-        intent.safety === OperationSafety.CLOUD;
+        intent.safety === OperationSafety.DESTRUCTIVE || intent.safety === OperationSafety.CLOUD;
 
       if (requiresConfirmation) {
         const warningMessage =
@@ -163,7 +162,6 @@ async function main() {
     displayWarning("I'm not sure how to help with that.");
     displayInfo('Try describing a git operation, like "show status" or "create a branch"');
     process.exit(0);
-
   } catch (error) {
     displayError('An unexpected error occurred:');
     console.error(error);

@@ -4129,6 +4129,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"natural-language-git@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "natural-language-git@workspace:."
+  dependencies:
+    "@biomejs/biome": "npm:^1.9.4"
+    "@inquirer/prompts": "npm:^7.0.1"
+    "@types/jest": "npm:^29.5.14"
+    "@types/node": "npm:^20.17.6"
+    chalk: "npm:^5.3.0"
+    jest: "npm:^29.7.0"
+    node-llama-cpp: "npm:^3.1.1"
+    ora: "npm:^8.1.1"
+    ts-jest: "npm:^29.2.5"
+    typescript: "npm:^5.6.3"
+  bin:
+    natural-language-git: dist/index.js
+  languageName: unknown
+  linkType: soft
+
 "negotiator@npm:^1.0.0":
   version: 1.0.0
   resolution: "negotiator@npm:1.0.0"
@@ -4142,25 +4161,6 @@ __metadata:
   checksum: 10c0/c2f5a604a54a8ec5438a342e1f356dff4bc33ccccdb6dc668d94fe8e5eccfc9d2c2eea6064b0967a767ba63b33763f51ccf2cd2441b461a7322656c1f06b3f5d
   languageName: node
   linkType: hard
-
-"nlgit@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "nlgit@workspace:."
-  dependencies:
-    "@biomejs/biome": "npm:^1.9.4"
-    "@inquirer/prompts": "npm:^7.0.1"
-    "@types/jest": "npm:^29.5.14"
-    "@types/node": "npm:^20.17.6"
-    chalk: "npm:^5.3.0"
-    jest: "npm:^29.7.0"
-    node-llama-cpp: "npm:^3.1.1"
-    ora: "npm:^8.1.1"
-    ts-jest: "npm:^29.2.5"
-    typescript: "npm:^5.6.3"
-  bin:
-    nlgit: dist/index.js
-  languageName: unknown
-  linkType: soft
 
 "node-addon-api@npm:^8.3.1":
   version: 8.5.0

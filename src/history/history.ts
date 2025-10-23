@@ -1,9 +1,9 @@
-import { readFile, writeFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
+import { existsSync } from 'node:fs';
+import { readFile, writeFile } from 'node:fs/promises';
+import { getConfigPaths } from '../config/index.js';
 import type { HistoryEntry, HistoryStorage } from './history-common.js';
 import { MAX_HISTORY_ENTRIES } from './history-common.js';
-import { getConfigPaths } from '../config/index.js';
 
 /**
  * Load history from file

@@ -2,10 +2,10 @@ import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
 import type { GitOperationResult } from './git-operations-common.js';
 import {
+  CLOUD_COMMANDS,
+  DESTRUCTIVE_COMMANDS,
   OperationSafety,
   SAFE_COMMANDS,
-  DESTRUCTIVE_COMMANDS,
-  CLOUD_COMMANDS,
 } from './git-operations-common.js';
 
 const execAsync = promisify(exec);
@@ -103,39 +103,27 @@ export async function stageFiles(files: string[], cwd?: string): Promise<GitOper
 /**
  * Create a commit
  */
-export async function createCommit(
-  message: string,
-  cwd?: string
-): Promise<GitOperationResult> {
+export async function createCommit(message: string, cwd?: string): Promise<GitOperationResult> {
   return executeGitCommand('commit', ['-m', message], cwd);
 }
 
 /**
  * Create a new branch
  */
-export async function createBranch(
-  branchName: string,
-  cwd?: string
-): Promise<GitOperationResult> {
+export async function createBranch(branchName: string, cwd?: string): Promise<GitOperationResult> {
   return executeGitCommand('branch', [branchName], cwd);
 }
 
 /**
  * Switch to a branch
  */
-export async function switchBranch(
-  branchName: string,
-  cwd?: string
-): Promise<GitOperationResult> {
+export async function switchBranch(branchName: string, cwd?: string): Promise<GitOperationResult> {
   return executeGitCommand('checkout', [branchName], cwd);
 }
 
 /**
  * Get git log
  */
-export async function getGitLog(
-  maxCount = 10,
-  cwd?: string
-): Promise<GitOperationResult> {
+export async function getGitLog(maxCount = 10, cwd?: string): Promise<GitOperationResult> {
   return executeGitCommand('log', ['--oneline', `-n${maxCount}`], cwd);
 }

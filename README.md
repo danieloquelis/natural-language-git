@@ -37,15 +37,41 @@ nlgit "show me the last 5 commits"
 nlgit "rebase with main and keep my changes"
 ```
 
-### First Run
+### First Run & Setup
 
-On first run, NLGit will guide you through:
+### Initial Onboarding
+
+On first run, NLGit will automatically guide you through:
 
 1. Selecting an AI model (LLaMA or Mistral)
-2. Downloading the model (only happens once)
-3. Initializing the model
+2. Downloading the model (only happens once, can be several GB)
+3. Initializing the model in memory
 
 After onboarding, NLGit is ready to use!
+
+### Manual Setup/Reset
+
+If you want to change your model or reset the configuration:
+
+1. **Remove the config directory**:
+```bash
+rm -rf ~/.nlgit
+```
+
+2. **Run nlgit again** to restart onboarding:
+```bash
+nlgit "any command"
+```
+
+The onboarding will detect the missing configuration and guide you through setup again.
+
+### Configuration Location
+
+All NLGit data is stored in `~/.nlgit/`:
+- `config.json` - Selected model and preferences
+- `models/` - Downloaded LLM models (large files)
+- `history.json` - Operation history
+- `logs/` - Temporary logs (auto-cleaned after 24h)
 
 ## How It Works
 
@@ -90,14 +116,6 @@ nlgit "show me the last 10 commits"
 nlgit "merge develop into my current branch"
 ```
 
-## Configuration
-
-NLGit stores all data in `~/.nlgit/`:
-
-- `config.json`: Selected model and preferences
-- `models/`: Downloaded LLM models
-- `history.json`: Operation history (last 50 operations)
-- `logs/`: Temporary logs (auto-deleted after 24h)
 
 ## Supported Models
 
@@ -129,51 +147,26 @@ NLGit is focused exclusively on Git operations. If you ask about non-Git topics,
 - Node.js >= 20.0.0
 - Git installed and configured
 - macOS, Linux, or Windows
-
-## Development
-
-### Project Structure
-
-```
-src/
-  ├── config/           # Configuration and cache management
-  ├── models/           # Model download and management
-  ├── llm/              # LLM integration (node-llama-cpp)
-  ├── git-operations/   # Git command execution
-  ├── ui/               # Terminal UI components
-  ├── agent/            # Natural language interpretation
-  ├── onboarding/       # Initial setup flow
-  ├── history/          # Operation tracking
-  └── index.ts          # CLI entry point
-```
-
-### Build
-
-```bash
-yarn install
-yarn build
-```
-
-### Test
-
-```bash
-yarn test
-```
-
-### Lint
-
-```bash
-yarn lint
-yarn format
-```
+- At least 2-8 GB free disk space (for model storage)
 
 ## Contributing
 
-Contributions are welcome! Please follow the EU Component Library Git Conventions for commit messages (see INSTRUCTIONS.md).
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines on:
+
+- Development setup
+- Code conventions
+- Commit message format
+- Pull request process
+
+## Project Status
+
+**Note**: This project is in active development. Unit tests are not yet implemented, and the tool has not been fully tested in production environments. Use with caution and always review suggested commands before confirming destructive operations.
 
 ## License
 
-MIT
+MIT License - see [LICENSE](LICENSE) file for details.
+
+Copyright (c) 2025 Daniel Oquelis
 
 ## Acknowledgments
 

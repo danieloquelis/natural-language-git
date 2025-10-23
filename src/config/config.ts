@@ -1,9 +1,9 @@
-import { mkdir, readFile, writeFile, readdir, stat, unlink } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { mkdir, readFile, readdir, stat, unlink, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
-import type { NLGitConfig, ConfigPaths } from './config-common.js';
-import { DEFAULT_CONFIG, CACHE_DIR_NAME, LOG_RETENTION_MS } from './config-common.js';
+import { join } from 'node:path';
+import type { ConfigPaths, NLGitConfig } from './config-common.js';
+import { CACHE_DIR_NAME, DEFAULT_CONFIG, LOG_RETENTION_MS } from './config-common.js';
 
 /**
  * Get all configuration paths

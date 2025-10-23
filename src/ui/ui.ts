@@ -1,7 +1,7 @@
-import { select, confirm, input } from '@inquirer/prompts';
+import { confirm, input, select } from '@inquirer/prompts';
 import chalk from 'chalk';
 import ora, { type Ora } from 'ora';
-import { getRandomLoadingMessage, ASCII_LOGO } from './ui-common.js';
+import { ASCII_LOGO, getRandomLoadingMessage } from './ui-common.js';
 
 /**
  * Display the welcome screen with ASCII logo

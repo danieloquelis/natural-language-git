@@ -1,5 +1,5 @@
-import { getLlama, LlamaChatSession } from 'node-llama-cpp';
-import type { LLMResponse, GenerationOptions } from './llm-common.js';
+import { LlamaChatSession, getLlama } from 'node-llama-cpp';
+import type { GenerationOptions, LLMResponse } from './llm-common.js';
 import { DEFAULT_GENERATION_OPTIONS } from './llm-common.js';
 
 let llamaInstance: Awaited<ReturnType<typeof getLlama>> | null = null;

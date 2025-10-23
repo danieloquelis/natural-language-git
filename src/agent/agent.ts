@@ -1,7 +1,7 @@
+import { OperationSafety } from '../git-operations/index.js';
 import { generate } from '../llm/index.js';
 import type { ParsedIntent } from './agent-common.js';
-import { SYSTEM_PROMPT, IntentType } from './agent-common.js';
-import { OperationSafety } from '../git-operations/index.js';
+import { IntentType, SYSTEM_PROMPT } from './agent-common.js';
 
 /**
  * Parse user prompt and determine intent

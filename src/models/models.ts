@@ -2,11 +2,11 @@ import { createWriteStream } from 'node:fs';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { dirname } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
-import type { ModelDefinition, ModelsConfig, ProgressCallback } from './models-common.js';
 import { getConfigPaths } from '../config/index.js';
+import type { ModelDefinition, ModelsConfig, ProgressCallback } from './models-common.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -32,7 +32,7 @@ export async function getAvailableModels(): Promise<ModelDefinition[]> {
 /**
  * Check if a model is already downloaded
  */
-export function isModelDownloaded(modelId: string, destFile: string): boolean {
+export function isModelDownloaded(_modelId: string, destFile: string): boolean {
   const paths = getConfigPaths();
   const modelPath = join(paths.modelsDir.toString(), destFile);
   return existsSync(modelPath);
