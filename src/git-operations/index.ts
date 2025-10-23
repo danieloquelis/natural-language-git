@@ -9,6 +9,8 @@ export {
   createBranch,
   switchBranch,
   getGitLog,
+  getStagedDiff,
+  getChangedFiles,
 } from './git-operations.js';
 
 export type { GitOperationResult, GitOperation } from './git-operations-common.js';

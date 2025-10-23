@@ -1,8 +1,13 @@
 #!/usr/bin/env node
 
-import { IntentType, getNonGitResponse, parseUserPrompt } from './agent/index.js';
+import {
+  IntentType,
+  generateCommitMessage,
+  getNonGitResponse,
+  parseUserPrompt,
+} from './agent/index.js';
 import { cleanupOldLogs } from './config/index.js';
-import { isGitRepository } from './git-operations/index.js';
+import { getChangedFiles, getStagedDiff, isGitRepository } from './git-operations/index.js';
 import { OperationSafety, executeGitCommand } from './git-operations/index.js';
 import { addHistoryEntry } from './history/index.js';
 import { ensureOnboarding } from './onboarding/index.js';
@@ -215,6 +220,55 @@ async function main() {
         const parts = commandWithoutGit.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
         const gitCommand = parts[0] || '';
         const args = parts.slice(1).map((arg) => arg.replace(/^"|"$/g, '')); // Remove quotes
+
+        // Check for commit command with empty or missing message
+        if (gitCommand === 'commit' && (args.includes('-m') || args.includes('--message'))) {
+          const messageIndex = args.findIndex((arg) => arg === '-m' || arg === '--message');
+          const message = args[messageIndex + 1] || '';
+
+          // If message is empty or very short, generate a better one
+          if (!message || message.trim() === '' || message.trim().length < 3) {
+            console.log();
+            const spinner = createSpinner('Analyzing changes to generate commit message...');
+            spinner.start();
+
+            try {
+              const changedFiles = await getChangedFiles();
+              const diffResult = await getStagedDiff();
+
+              if (changedFiles.length > 0) {
+                const generatedMessage = await generateCommitMessage(
+                  changedFiles,
+                  diffResult.output
+                );
+
+                spinner.succeed('Generated commit message');
+                console.log();
+                displayInfo('Suggested commit message:');
+                displayCode(`  ${generatedMessage}`);
+                console.log();
+
+                const useGenerated = await askConfirmation('Use this message?', true);
+
+                if (useGenerated) {
+                  // Replace the message in args
+                  args[messageIndex + 1] = generatedMessage;
+                } else {
+                  // Ask user for custom message
+                  const customMessage = await getTextInput(
+                    'Enter commit message:',
+                    generatedMessage
+                  );
+                  args[messageIndex + 1] = customMessage;
+                }
+              } else {
+                spinner.fail('No staged changes to analyze');
+              }
+            } catch (error) {
+              spinner.fail('Failed to generate message');
+            }
+          }
+        }
 
         // Mark as interactive if it's an interactive command
         const isInteractive =

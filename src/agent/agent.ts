@@ -96,3 +96,35 @@ export function getNonGitResponse(): string {
 
 For non-Git tasks, please use other tools. How can I help you with Git?`;
 }
+
+/**
+ * Generate a commit message based on file changes
+ */
+export async function generateCommitMessage(
+  changedFiles: string[],
+  diffStat: string
+): Promise<string> {
+  const prompt = `Generate a concise git commit message (one line, max 50 chars) for these changes:
+
+Changed files:
+${changedFiles.map((f) => `- ${f}`).join('\n')}
+
+Diff stats:
+${diffStat}
+
+Respond with ONLY the commit message, no quotes, no explanation. Follow conventional commit style if applicable (feat:, fix:, docs:, etc).`;
+
+  try {
+    const response = await generate(prompt, {
+      temperature: 0.5,
+      maxTokens: 50,
+    });
+
+    return response.text.trim().replace(/^["']|["']$/g, ''); // Remove quotes if any
+  } catch (error) {
+    // Fallback to basic message if generation fails
+    const mainFile = changedFiles[0] || 'files';
+    const action = changedFiles.length > 1 ? 'update' : 'change';
+    return `${action} ${mainFile}`;
+  }
+}

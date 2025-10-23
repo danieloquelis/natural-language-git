@@ -172,3 +172,21 @@ export async function switchBranch(branchName: string, cwd?: string): Promise<Gi
 export async function getGitLog(maxCount = 10, cwd?: string): Promise<GitOperationResult> {
   return executeGitCommand('log', ['--oneline', `-n${maxCount}`], cwd);
 }
+
+/**
+ * Get git diff for staged changes
+ */
+export async function getStagedDiff(cwd?: string): Promise<GitOperationResult> {
+  return executeGitCommand('diff', ['--cached', '--stat'], cwd);
+}
+
+/**
+ * Get list of changed files
+ */
+export async function getChangedFiles(cwd?: string): Promise<string[]> {
+  const result = await executeGitCommand('diff', ['--cached', '--name-only'], cwd);
+  if (result.success) {
+    return result.output.split('\n').filter((line) => line.trim());
+  }
+  return [];
+}
