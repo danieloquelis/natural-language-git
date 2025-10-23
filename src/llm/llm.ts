@@ -64,7 +64,6 @@ export async function generate(
     temperature: mergedOptions.temperature,
     maxTokens: mergedOptions.maxTokens,
     topP: mergedOptions.topP,
-    stopStrings: options.stopSequences,
     onTextChunk(chunk) {
       generatedText += chunk;
       tokenCount++;

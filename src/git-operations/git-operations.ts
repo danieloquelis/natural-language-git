@@ -1,6 +1,6 @@
 import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
-import type { GitOperationResult, GitOperation } from './git-operations-common.js';
+import type { GitOperationResult } from './git-operations-common.js';
 import {
   OperationSafety,
   SAFE_COMMANDS,

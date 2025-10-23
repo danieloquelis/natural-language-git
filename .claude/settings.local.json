@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(find:*)",
+      "Bash(for dir in src/*/)",
+      "Bash(do mkdir -p \"$dir__tests__\")",
+      "Bash(done)",
+      "Bash(corepack enable)",
+      "Bash(corepack prepare:*)",
+      "Bash(yarn --version:*)",
+      "Bash(yarn install)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
