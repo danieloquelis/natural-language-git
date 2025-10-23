@@ -67,6 +67,67 @@ src/
 - `yarn format`: Format code with Biome
 - `yarn test`: Run tests (not yet implemented)
 
+### Testing Locally
+
+There are several ways to test the CLI locally before publishing:
+
+#### Method 1: Using `npm link` (Recommended)
+
+This creates a global symlink, simulating `npm install -g`:
+
+```bash
+# Build the project first
+yarn build
+
+# Create global link
+npm link
+
+# Now you can use nlgit from anywhere
+nlgit "show status"
+
+# To unlink when done
+npm unlink -g natural-language-git
+```
+
+#### Method 2: Direct execution
+
+Run the CLI directly from the dist folder:
+
+```bash
+yarn build
+node dist/index.js "show status"
+```
+
+#### Method 3: Using the full path
+
+Add an alias to your `.zshrc` or `.bashrc`:
+
+```bash
+# In ~/.zshrc or ~/.bashrc
+alias nlgit="node /path/to/natural-language-git/dist/index.js"
+```
+
+Then reload your shell:
+```bash
+source ~/.zshrc  # or source ~/.bashrc
+```
+
+#### Method 4: Testing in another repository
+
+After using `npm link`, navigate to any git repository and test:
+
+```bash
+cd /path/to/any/git/repo
+nlgit "what's the current branch?"
+nlgit "show me recent commits"
+```
+
+**Important Notes**:
+- Always run `yarn build` before testing after making changes
+- On first run, nlgit will start the onboarding process to download and configure an LLM model (2-8 GB download)
+- The LLM model will be stored in `~/.nlgit/models/`
+- To reset and test onboarding again: `rm -rf ~/.nlgit`
+
 ## Git Commit Guidelines
 
 We follow the EU Component Library Git Conventions.

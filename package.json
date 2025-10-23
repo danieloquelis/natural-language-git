@@ -5,7 +5,9 @@
   "main": "dist/index.js",
   "type": "module",
   "packageManager": "yarn@4.5.3",
-  "bin": "dist/index.js",
+  "bin": {
+    "nlgit": "dist/index.js"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -17,7 +19,13 @@
     "format": "biome format --write .",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["git", "cli", "natural-language", "llm", "ai"],
+  "keywords": [
+    "git",
+    "cli",
+    "natural-language",
+    "llm",
+    "ai"
+  ],
   "author": "Daniel Oquelis",
   "license": "MIT",
   "engines": {
