@@ -1,17 +1,20 @@
-# NLGit - Natural Language Git
-
 ![NLGit Logo](nlgit-portrait.png)
+
+# NLGit - Natural Language Git
 
 Control Git with natural language! NLGit is a cross-platform CLI tool that interprets your natural language instructions and executes Git operations locally using AI.
 
+![License](https://badgen.net/badge/color/MIT/green?label=license)
+![Types](https://badgen.net/badge/color/TypeScript/blue?label=types)
+
 ## Features
 
-- 🗣️ **Natural Language Interface**: Just describe what you want to do
-- 🔒 **Safe by Design**: Asks for confirmation on destructive operations
-- 🚀 **Fast & Offline**: Runs locally with downloaded LLM models
-- 🤖 **Agentic**: Makes intelligent decisions based on context
-- 📝 **Operation History**: Track and potentially revert operations
-- 🎨 **Beautiful CLI**: Interactive menus and clear feedback
+- **Natural Language Interface**: Just describe what you want to do
+- **Safe by Design**: Asks for confirmation on destructive operations
+- **Fast & Offline**: Runs locally with downloaded LLM models
+- **Agentic**: Makes intelligent decisions based on context
+- **Operation History**: Track and potentially revert operations
+- **Beautiful CLI**: Interactive menus and clear feedback
 
 ## Installation
 
@@ -54,11 +57,13 @@ After onboarding, NLGit is ready to use!
 If you want to change your model or reset the configuration:
 
 1. **Remove the config directory**:
+
 ```bash
 rm -rf ~/.nlgit
 ```
 
 2. **Run nlgit again** to restart onboarding:
+
 ```bash
 nlgit "any command"
 ```
@@ -68,6 +73,7 @@ The onboarding will detect the missing configuration and guide you through setup
 ### Configuration Location
 
 All NLGit data is stored in `~/.nlgit/`:
+
 - `config.json` - Selected model and preferences
 - `models/` - Downloaded LLM models (large files)
 - `history.json` - Operation history
@@ -92,30 +98,34 @@ NLGit classifies operations into three safety levels:
 ## Examples
 
 ### Check repository status
+
 ```bash
 nlgit "what's the current status?"
 ```
 
 ### Create and switch to a branch
+
 ```bash
 nlgit "create a branch named feature-x and switch to it"
 ```
 
 ### Commit changes
+
 ```bash
 nlgit "stage all files and commit with message 'initial commit'"
 ```
 
 ### View history
+
 ```bash
 nlgit "show me the last 10 commits"
 ```
 
 ### Merge branches
+
 ```bash
 nlgit "merge develop into my current branch"
 ```
-
 
 ## Supported Models
 

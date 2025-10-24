@@ -13,18 +13,21 @@ Thank you for your interest in contributing to NLGit! This document provides gui
 ### Getting Started
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/yourusername/natural-language-git.git
 cd natural-language-git
 ```
 
 2. Enable corepack and install dependencies:
+
 ```bash
 corepack enable
 yarn install
 ```
 
 3. Build the project:
+
 ```bash
 yarn build
 ```
@@ -108,6 +111,7 @@ alias nlgit="node /path/to/natural-language-git/dist/index.js"
 ```
 
 Then reload your shell:
+
 ```bash
 source ~/.zshrc  # or source ~/.bashrc
 ```
@@ -123,6 +127,7 @@ nlgit "show me recent commits"
 ```
 
 **Important Notes**:
+
 - Always run `yarn build` before testing after making changes
 - On first run, nlgit will start the onboarding process to download and configure an LLM model (2-8 GB download)
 - The LLM model will be stored in `~/.nlgit/models/`
@@ -130,55 +135,7 @@ nlgit "show me recent commits"
 
 ## Git Commit Guidelines
 
-We follow the EU Component Library Git Conventions.
-
-### Commit Message Format
-
-```
-<type>(<scope>): <subject>
-
-<body>
-
-<footer>
-```
-
-### Types
-
-- **feat**: New feature
-- **fix**: Bug fix
-- **docs**: Documentation only changes
-- **style**: Code style changes (formatting, missing semicolons, etc.)
-- **refactor**: Code change that neither fixes a bug nor adds a feature
-- **perf**: Performance improvements
-- **test**: Adding or updating tests
-- **chore**: Changes to build process or auxiliary tools
-
-### Rules
-
-- Use present tense ("add feature" not "added feature")
-- Use imperative mood ("move cursor to..." not "moves cursor to...")
-- First line should not exceed 72 characters
-- Reference issues and pull requests in the footer
-- Separate subject from body with a blank line
-- Wrap body at 72 characters
-
-### Examples
-
-```
-feat(agent): add support for interactive rebase
-
-Implement interactive rebase parsing and execution with
-conflict resolution guidance.
-
-Closes #123
-```
-
-```
-fix(llm): prevent memory leak in session management
-
-Release model context properly when switching models
-to avoid accumulating memory usage.
-```
+We follow the [EU Component Library Git Conventions](https://ec.europa.eu/component-library/v1.14.2/ec/docs/conventions/git/).
 
 ## Pull Request Process
 
@@ -208,10 +165,11 @@ to avoid accumulating memory usage.
 - Mock external dependencies appropriately
 
 Example test structure:
+
 ```typescript
 // src/config/__tests__/config.test.ts
-describe('Config Module', () => {
-  it('should initialize config directory', async () => {
+describe("Config Module", () => {
+  it("should initialize config directory", async () => {
     // Test implementation
   });
 });
