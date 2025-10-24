@@ -4144,7 +4144,7 @@ __metadata:
     ts-jest: "npm:^29.2.5"
     typescript: "npm:^5.6.3"
   bin:
-    natural-language-git: dist/index.js
+    nlgit: dist/index.js
   languageName: unknown
   linkType: soft
 
