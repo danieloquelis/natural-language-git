@@ -19,13 +19,12 @@ Before using this workflow, you need to configure the following secrets in your 
 1. Go to the **Actions** tab in your GitHub repository
 2. Select the **Publish to npm** workflow
 3. Click **Run workflow**
-4. Configure the workflow run:
-   - **Branch**: Select which branch to publish from (default: `main`)
-   - **Version bump type**: Choose the semantic version bump:
-     - `patch` (0.1.0 → 0.1.1) - Bug fixes and small changes
-     - `minor` (0.1.0 → 0.2.0) - New features, backward compatible
-     - `major` (0.1.0 → 1.0.0) - Breaking changes
-5. Click **Run workflow**
+4. Select the branch you want to publish from using the branch dropdown
+5. Choose the **Version bump type**:
+   - `patch` (0.1.0 → 0.1.1) - Bug fixes and small changes
+   - `minor` (0.1.0 → 0.2.0) - New features, backward compatible
+   - `major` (0.1.0 → 1.0.0) - Breaking changes
+6. Click **Run workflow**
 
 ### What the Workflow Does
 

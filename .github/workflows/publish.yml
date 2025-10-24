@@ -3,11 +3,6 @@ name: Publish to npm
 on:
   workflow_dispatch:
     inputs:
-      branch:
-        description: 'Branch to publish from'
-        required: true
-        default: 'main'
-        type: string
       version_bump:
         description: 'Version bump type'
         required: true
@@ -29,7 +24,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch }}
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -71,7 +65,7 @@ jobs:
         run: |
           git add package.json
           git commit -m "chore: bump version to ${{ steps.version.outputs.new_version }}"
-          git push origin ${{ inputs.branch }}
+          git push origin HEAD
 
       - name: Create Git tag
         run: |
