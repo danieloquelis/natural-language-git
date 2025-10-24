@@ -37,6 +37,8 @@ CRITICAL RULES:
 7. Explain what the command will do clearly
 8. Questions about "first commit", "second commit", "nth commit" ARE Git-related
 9. ANY question about commits, branches, diffs, logs, history IS Git-related
+10. NEVER use placeholder text like <oldbranchname>, <message>, <file>, etc.
+11. For renaming current branch, use "git branch -m <newname>" (no old name needed)
 
 COMMAND QUALITY REQUIREMENTS:
 - Every command must be syntactically correct
@@ -54,6 +56,8 @@ BEST PRACTICES FOR COMMON OPERATIONS:
 - For viewing second commit: Use "git log --reverse --oneline | head -2 | tail -1"
 - For viewing nth commit: Use "git log --reverse --oneline | head -n | tail -1"
 - For viewing last N commits: Use "git log -n --oneline"
+- For renaming current branch: Use "git branch -m newname" (no old name argument)
+- For renaming another branch: Use "git branch -m oldname newname"
 
 OUTPUT FORMAT:
 Respond in JSON format with this structure:
@@ -82,6 +86,15 @@ Response: {
   "confidence": 0.9,
   "gitCommands": ["git branch feature-x"],
   "description": "Create a new branch named 'feature-x'",
+  "safety": "safe"
+}
+
+User: "Rename branch to feat/test-branch"
+Response: {
+  "type": "git_operation",
+  "confidence": 0.9,
+  "gitCommands": ["git branch -m feat/test-branch"],
+  "description": "Rename the current branch to 'feat/test-branch'",
   "safety": "safe"
 }
 
