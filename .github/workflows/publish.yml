@@ -40,7 +40,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Run linter
-        run: yarn lint
+        run: yarn lint:fix && git diff --exit-code
 
       - name: Build project
         run: yarn build
