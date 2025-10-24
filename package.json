@@ -1,6 +1,6 @@
 {
   "name": "natural-language-git",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Natural Language Git - A CLI tool that interprets natural language instructions and performs Git operations",
   "main": "dist/index.js",
   "type": "module",
@@ -27,7 +27,13 @@
     "format": "biome format --write .",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["git", "cli", "natural-language", "llm", "ai"],
+  "keywords": [
+    "git",
+    "cli",
+    "natural-language",
+    "llm",
+    "ai"
+  ],
   "author": "Daniel Oquelis",
   "license": "MIT",
   "engines": {
