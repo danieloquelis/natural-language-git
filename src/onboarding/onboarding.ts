@@ -14,6 +14,7 @@ import {
   displayWelcome,
   selectFromList,
 } from '../ui/index.js';
+import { getVersion } from '../version.js';
 import type { OnboardingState } from './onboarding-common.js';
 import { isOnboardingComplete } from './onboarding-common.js';
 
@@ -59,7 +60,7 @@ export async function runOnboarding(): Promise<boolean> {
   // Display welcome
   displayWelcome();
 
-  console.log('Version 0.1.0');
+  console.log(`Version ${getVersion()}`);
   console.log('Copyright (c) 2025 Daniel Oquelis\n');
 
   displayHeader('Welcome to NLGit! 🚀');

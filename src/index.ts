@@ -22,12 +22,13 @@ import {
   displayWarning,
   getTextInput,
 } from './ui/index.js';
+import { getVersion } from './version.js';
 
 /**
  * Show version information
  */
 function showVersion() {
-  console.log('nlgit version 0.1.0');
+  console.log(`nlgit version ${getVersion()}`);
   console.log('Copyright (c) 2025 Daniel Oquelis');
   console.log('MIT License');
 }
