@@ -73,10 +73,7 @@ export async function handleInteractiveRebase(
     console.log();
 
     // Detect if this is a squash operation
-    const wantToSquash = await askConfirmation(
-      'Do you want to squash/combine commits?',
-      true
-    );
+    const wantToSquash = await askConfirmation('Do you want to squash/combine commits?', true);
 
     if (!wantToSquash) {
       return {
@@ -108,27 +105,19 @@ export async function handleInteractiveRebase(
       },
     ];
 
-    const messageChoice = await selectFromList(
-      'Choose commit message:',
-      messageChoices
-    );
+    const messageChoice = await selectFromList('Choose commit message:', messageChoices);
 
     let finalMessage: string;
 
     if (messageChoice === 'custom') {
-      finalMessage = await getTextInput(
-        'Enter commit message:',
-        commits[0].message
-      );
+      finalMessage = await getTextInput('Enter commit message:', commits[0].message);
     } else {
       const idx = Number.parseInt(messageChoice.split('-')[1]);
       finalMessage = commits[idx].message;
     }
 
     // Create rebase todo file
-    const rebaseTodo = commits
-      .map((c) => `${c.action} ${c.hash} ${c.message}`)
-      .join('\n');
+    const rebaseTodo = commits.map((c) => `${c.action} ${c.hash} ${c.message}`).join('\n');
 
     const todoFile = join(tmpdir(), `nlgit-rebase-${Date.now()}`);
     await writeFile(todoFile, rebaseTodo, 'utf-8');
