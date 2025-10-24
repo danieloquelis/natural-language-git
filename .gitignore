@@ -36,3 +36,10 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# AI Tools
+.cursor/
+.claude/
+CLAUDE.md
+BUGS.md
+INSTRUCTIONS.md

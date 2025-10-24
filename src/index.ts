@@ -10,6 +10,7 @@ import { cleanupOldLogs } from './config/index.js';
 import { getChangedFiles, getStagedDiff, isGitRepository } from './git-operations/index.js';
 import { OperationSafety, executeGitCommand } from './git-operations/index.js';
 import { addHistoryEntry } from './history/index.js';
+import { handleInteractiveRebase, parseRebaseCommand } from './interactive-rebase/index.js';
 import { ensureOnboarding } from './onboarding/index.js';
 import {
   askConfirmation,
@@ -194,25 +195,34 @@ async function main() {
           ? trimmedCmd.substring(4).trim()
           : trimmedCmd;
 
-        // Check for interactive commands that need manual intervention
+        // Check for interactive rebase - use custom UI instead of vim
         if (
           commandWithoutGit.includes('rebase -i') ||
           commandWithoutGit.includes('rebase --interactive')
         ) {
-          console.log();
-          displayInfo('This operation requires an interactive editor.');
-          displayInfo('NLGit will open your default git editor for you to complete the rebase.');
-          console.log();
-          displayInfo('In the editor that opens:');
-          displayCode('  - Change "pick" to "squash" (or "s") for commits to combine');
-          displayCode('  - Save and close the editor');
-          displayCode('  - Edit the commit message in the next editor that opens');
-          console.log();
+          const commitCount = parseRebaseCommand(commandWithoutGit);
 
-          const proceed = await askConfirmation('Open interactive rebase editor?', true);
-          if (!proceed) {
-            displayInfo('Operation cancelled.');
-            process.exit(0);
+          if (commitCount) {
+            const rebaseResult = await handleInteractiveRebase(commitCount);
+
+            if (rebaseResult.success) {
+              console.log();
+              displaySuccess('Rebase completed successfully!');
+              if (rebaseResult.finalMessage) {
+                displayInfo(`Combined commit message: ${rebaseResult.finalMessage}`);
+              }
+            } else {
+              console.log();
+              displayError('Rebase failed');
+              if (rebaseResult.error) {
+                displayInfo(rebaseResult.error);
+              }
+            }
+
+            process.exit(rebaseResult.success ? 0 : 1);
+          } else {
+            displayError('Could not parse rebase command');
+            process.exit(1);
           }
         }
 
