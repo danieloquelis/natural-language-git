@@ -2,7 +2,7 @@
 
 # NLGit - Natural Language Git
 
-[![Version](https://badgen.net/npm/v/natural-language-git)](https://www.npmjs.com/package/node-llama-cpp)
+[![Version](https://badgen.net/npm/v/natural-language-git)](https://www.npmjs.com/package/natural-language-git)
 [![Build](https://github.com/danieloquelis/natural-language-git/actions/workflows/publish.yml/badge.svg)](https://github.com/danieloquelis/natural-language-git/actions/workflows/publish.yml)
 ![License](https://badgen.net/badge/color/MIT/green?label=license)
 
