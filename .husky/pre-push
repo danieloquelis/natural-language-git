@@ -1,0 +1,37 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Running pre-push checks..."
+
+# Run tests
+echo "Running tests..."
+yarn test 2>&1 | grep -E "Test Suites:|Tests:"
+if [ $? -ne 0 ]; then
+  echo "❌ Tests failed. Push aborted."
+  exit 1
+fi
+echo "✅ Tests passed"
+
+# Run linter
+echo "Running linter..."
+yarn lint
+if [ $? -ne 0 ]; then
+  echo "⚠️  Linter found issues. Attempting to fix..."
+  yarn lint:fix
+
+  # Check if there are any changes after fixing
+  if ! git diff --quiet; then
+    echo "✅ Linter fixes applied"
+    echo "📝 Please review the changes, stage them, and commit:"
+    echo "   git add ."
+    echo "   git commit --amend --no-edit"
+    echo "❌ Push aborted - please commit linter fixes first"
+    exit 1
+  else
+    echo "✅ All linter issues resolved"
+  fi
+fi
+echo "✅ Linter passed"
+
+echo "✨ All pre-push checks passed!"
+exit 0

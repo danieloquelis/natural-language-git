@@ -36,11 +36,7 @@ export default {
     'models.test.ts',
     'interactive-rebase.test.ts',
   ],
-  collectCoverageFrom: [
-    'src/**/*.ts',
-    '!src/**/__tests__/**',
-    '!src/**/index.ts',
-  ],
+  collectCoverageFrom: ['src/**/*.ts', '!src/**/__tests__/**', '!src/**/index.ts'],
   coverageThreshold: {
     // Individual module thresholds for well-tested modules
     './src/agent/agent.ts': {
