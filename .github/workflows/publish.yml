@@ -1,17 +1,17 @@
-name: Publish to npm
+name: Build
 
 on:
   workflow_dispatch:
     inputs:
       version_bump:
-        description: 'Version bump type'
+        description: "Version bump type"
         required: true
         type: choice
         options:
           - patch
           - minor
           - major
-        default: 'patch'
+        default: "patch"
 
 permissions:
   contents: write
@@ -30,8 +30,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Enable Corepack
         run: corepack enable
@@ -40,7 +40,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Run linter
-        run: yarn lint:fix && git diff --exit-code
+        run: yarn lint
 
       - name: Build project
         run: yarn build

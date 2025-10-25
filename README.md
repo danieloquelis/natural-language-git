@@ -1,11 +1,14 @@
-![NLGit Logo](nlgit-portrait.png)
+![NLGit Logo](assets/nlgit-portrait.png)
 
 # NLGit - Natural Language Git
 
+[![Version](https://badgen.net/npm/v/natural-language-git)](https://www.npmjs.com/package/node-llama-cpp)
+[![Build](https://github.com/danieloquelis/natural-language-git/actions/workflows/publish.yml/badge.svg)](https://github.com/danieloquelis/natural-language-git/actions/workflows/publish.yml)
+![License](https://badgen.net/badge/color/MIT/green?label=license)
+
 Control Git with natural language! NLGit is a cross-platform CLI tool that interprets your natural language instructions and executes Git operations locally using AI.
 
-![License](https://badgen.net/badge/color/MIT/green?label=license)
-![Types](https://badgen.net/badge/color/TypeScript/blue?label=types)
+![NLGit Demo](assets/demo.gif)
 
 ## Features
 
