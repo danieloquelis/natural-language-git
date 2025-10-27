@@ -1,6 +1,6 @@
 {
   "name": "natural-language-git",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Natural Language Git - A CLI tool that interprets natural language instructions and performs Git operations",
   "main": "dist/index.js",
   "type": "module",
