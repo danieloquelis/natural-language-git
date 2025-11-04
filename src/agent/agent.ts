@@ -106,13 +106,18 @@ export async function generateCommitMessage(
 ): Promise<string> {
   // Truncate diff if too long to avoid token limits
   const maxDiffLength = 1500;
-  const truncatedDiff = fullDiff.length > maxDiffLength
-    ? fullDiff.substring(0, maxDiffLength) + '\n...(truncated)'
-    : fullDiff;
+  const truncatedDiff =
+    fullDiff.length > maxDiffLength
+      ? fullDiff.substring(0, maxDiffLength) + '\n...(truncated)'
+      : fullDiff;
 
   // Extract scope from first file
   const firstFile = changedFiles[0] || '';
-  const scopeGuess = firstFile.split('/').pop()?.replace(/\.(ts|js|tsx|jsx|md)$/, '') || 'core';
+  const scopeGuess =
+    firstFile
+      .split('/')
+      .pop()
+      ?.replace(/\.(ts|js|tsx|jsx|md)$/, '') || 'core';
 
   const prompt = `Write a git commit message.
 
@@ -137,7 +142,10 @@ Commit message:`;
     let message = response.text.trim();
 
     // Remove common conversational prefixes the LLM might add
-    message = message.replace(/^(based on|commit message|your message|message|here is|here's|commit|suggested commit message):?\s*/gi, '');
+    message = message.replace(
+      /^(based on|commit message|your message|message|here is|here's|commit|suggested commit message):?\s*/gi,
+      ''
+    );
 
     // If still has introductory text, try to find the actual commit message
     const lines = message.split('\n');
