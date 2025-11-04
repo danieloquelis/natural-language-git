@@ -11,11 +11,13 @@ import {
 // Mock the LLM module
 jest.mock('../../llm/index.js', () => ({
   generate: jest.fn(),
+  generateFresh: jest.fn(),
 }));
 
 // Import after mocking
-import { generate } from '../../llm/index.js';
+import { generate, generateFresh } from '../../llm/index.js';
 const mockGenerate = generate as Mock<typeof generate>;
+const mockGenerateFresh = generateFresh as Mock<typeof generateFresh>;
 
 describe('agent module', () => {
   describe('isLikelyGitRelated', () => {
@@ -193,8 +195,9 @@ describe('agent module', () => {
     });
 
     it('should generate commit message from LLM', async () => {
-      mockGenerate.mockResolvedValue({
-        text: 'feat: add user authentication',
+      mockGenerateFresh.mockResolvedValue({
+        text: 'feat(auth): add user authentication',
+        tokensGenerated: 10,
       });
 
       const changedFiles = ['src/auth.ts', 'src/user.ts'];
@@ -202,57 +205,82 @@ describe('agent module', () => {
 
       const message = await generateCommitMessage(changedFiles, diffStat);
 
-      expect(message).toBe('feat: add user authentication');
-      expect(mockGenerate).toHaveBeenCalledWith(
-        expect.stringContaining('Generate a concise git commit message'),
+      expect(message).toBe('feat(auth): add user authentication');
+      expect(mockGenerateFresh).toHaveBeenCalledWith(
+        expect.stringContaining('Write a git commit message'),
         expect.objectContaining({
           temperature: 0.5,
-          maxTokens: 50,
+          maxTokens: 80,
         })
       );
     });
 
     it('should strip quotes from commit message', async () => {
-      mockGenerate.mockResolvedValue({
-        text: '"fix: resolve bug in parser"',
+      mockGenerateFresh.mockResolvedValue({
+        text: '"fix(parser): resolve bug in parser"',
+        tokensGenerated: 10,
       });
 
       const message = await generateCommitMessage(['parser.ts'], 'stats');
 
-      expect(message).toBe('fix: resolve bug in parser');
+      expect(message).toBe('fix(parser): resolve bug in parser');
     });
 
     it('should handle LLM errors with fallback', async () => {
-      mockGenerate.mockRejectedValue(new Error('LLM error'));
+      mockGenerateFresh.mockRejectedValue(new Error('LLM error'));
 
       const changedFiles = ['src/utils.ts', 'src/helpers.ts'];
       const message = await generateCommitMessage(changedFiles, 'stats');
 
-      expect(message).toBe('update src/utils.ts');
+      expect(message).toBe('chore: update src/utils.ts');
     });
 
     it('should handle empty changed files array', async () => {
-      mockGenerate.mockRejectedValue(new Error('LLM error'));
+      mockGenerateFresh.mockRejectedValue(new Error('LLM error'));
 
       const message = await generateCommitMessage([], 'stats');
 
-      expect(message).toBe('change files');
+      expect(message).toBe('chore: change files');
     });
 
     it('should use correct action for single file', async () => {
-      mockGenerate.mockRejectedValue(new Error('LLM error'));
+      mockGenerateFresh.mockRejectedValue(new Error('LLM error'));
 
       const message = await generateCommitMessage(['config.ts'], 'stats');
 
-      expect(message).toBe('change config.ts');
+      expect(message).toBe('chore: change config.ts');
     });
 
     it('should use update action for multiple files', async () => {
-      mockGenerate.mockRejectedValue(new Error('LLM error'));
+      mockGenerateFresh.mockRejectedValue(new Error('LLM error'));
 
       const message = await generateCommitMessage(['file1.ts', 'file2.ts'], 'stats');
 
-      expect(message).toBe('update file1.ts');
+      expect(message).toBe('chore: update file1.ts');
+    });
+
+    it('should extract commit message from conversational response', async () => {
+      mockGenerateFresh.mockResolvedValue({
+        text: 'Here is the commit message:\nfeat(api): add new endpoint for user data',
+        tokensGenerated: 15,
+      });
+
+      const changedFiles = ['src/api.ts'];
+      const message = await generateCommitMessage(changedFiles, 'diff content');
+
+      expect(message).toBe('feat(api): add new endpoint for user data');
+    });
+
+    it('should handle response with multiple lines', async () => {
+      mockGenerateFresh.mockResolvedValue({
+        text: 'feat(ui): update button styles\nThis adds new styling',
+        tokensGenerated: 12,
+      });
+
+      const changedFiles = ['src/ui/button.ts'];
+      const message = await generateCommitMessage(changedFiles, 'diff');
+
+      expect(message).toBe('feat(ui): update button styles');
     });
   });
 });

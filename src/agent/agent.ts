@@ -108,7 +108,7 @@ export async function generateCommitMessage(
   const maxDiffLength = 1500;
   const truncatedDiff =
     fullDiff.length > maxDiffLength
-      ? fullDiff.substring(0, maxDiffLength) + '\n...(truncated)'
+      ? `${fullDiff.substring(0, maxDiffLength)}\n...(truncated)`
       : fullDiff;
 
   // Extract scope from first file
