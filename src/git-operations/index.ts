@@ -10,6 +10,7 @@ export {
   switchBranch,
   getGitLog,
   getStagedDiff,
+  getStagedDiffStat,
   getChangedFiles,
 } from './git-operations.js';
 

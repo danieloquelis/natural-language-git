@@ -77,6 +77,55 @@ export async function generate(
 }
 
 /**
+ * Generate a response with a fresh context (no chat history)
+ * Useful when you don't want previous prompts to influence the output
+ */
+export async function generateFresh(
+  prompt: string,
+  options: GenerationOptions = {}
+): Promise<LLMResponse> {
+  if (!llamaInstance || !currentModelPath) {
+    throw new Error('LLM not initialized. Call initializeLLM first.');
+  }
+
+  const mergedOptions = {
+    ...DEFAULT_GENERATION_OPTIONS,
+    ...options,
+  };
+
+  // Load the model
+  const model = await llamaInstance.loadModel({
+    modelPath: currentModelPath,
+  });
+
+  // Create a fresh context
+  const context = await model.createContext();
+
+  // Create a one-time session
+  const freshSession = new LlamaChatSession({
+    contextSequence: context.getSequence(),
+  });
+
+  let generatedText = '';
+  let tokenCount = 0;
+
+  await freshSession.prompt(prompt, {
+    temperature: mergedOptions.temperature,
+    maxTokens: mergedOptions.maxTokens,
+    topP: mergedOptions.topP,
+    onTextChunk(chunk) {
+      generatedText += chunk;
+      tokenCount++;
+    },
+  });
+
+  return {
+    text: generatedText.trim(),
+    tokensGenerated: tokenCount,
+  };
+}
+
+/**
  * Dispose of the current LLM session
  */
 export async function disposeLLM(): Promise<void> {

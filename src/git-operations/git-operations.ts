@@ -1,5 +1,4 @@
-import { exec, spawn } from 'node:child_process';
-import { promisify } from 'node:util';
+import { spawn } from 'node:child_process';
 import type { GitOperationResult } from './git-operations-common.js';
 import {
   CLOUD_COMMANDS,
@@ -7,8 +6,6 @@ import {
   OperationSafety,
   SAFE_COMMANDS,
 } from './git-operations-common.js';
-
-const execAsync = promisify(exec);
 
 /**
  * Determine the safety level of a git command
@@ -54,26 +51,48 @@ export async function executeGitCommand(
     return executeInteractiveGitCommand(command, args, cwd);
   }
 
-  const fullCommand = ['git', command, ...args].join(' ');
-
-  try {
-    const { stdout, stderr } = await execAsync(fullCommand, {
+  // Use spawn instead of exec for proper argument handling
+  // This ensures special characters in arguments are properly escaped
+  return new Promise((resolve) => {
+    const gitProcess = spawn('git', [command, ...args], {
       cwd: cwd || process.cwd(),
-      maxBuffer: 10 * 1024 * 1024, // 10MB buffer
+      stdio: ['ignore', 'pipe', 'pipe'],
     });
 
-    return {
-      success: true,
-      output: stdout || stderr,
-    };
-  } catch (error) {
-    const err = error as { stdout?: string; stderr?: string; message: string };
-    return {
-      success: false,
-      output: err.stdout || '',
-      error: err.stderr || err.message,
-    };
-  }
+    let stdout = '';
+    let stderr = '';
+
+    gitProcess.stdout?.on('data', (data) => {
+      stdout += data.toString();
+    });
+
+    gitProcess.stderr?.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    gitProcess.on('close', (code) => {
+      if (code === 0) {
+        resolve({
+          success: true,
+          output: stdout || stderr,
+        });
+      } else {
+        resolve({
+          success: false,
+          output: stdout,
+          error: stderr || `Command exited with code ${code}`,
+        });
+      }
+    });
+
+    gitProcess.on('error', (error) => {
+      resolve({
+        success: false,
+        output: '',
+        error: error.message,
+      });
+    });
+  });
 }
 
 /**
@@ -177,6 +196,13 @@ export async function getGitLog(maxCount = 10, cwd?: string): Promise<GitOperati
  * Get git diff for staged changes
  */
 export async function getStagedDiff(cwd?: string): Promise<GitOperationResult> {
+  return executeGitCommand('diff', ['--cached'], cwd);
+}
+
+/**
+ * Get git diff stats for staged changes (summary only)
+ */
+export async function getStagedDiffStat(cwd?: string): Promise<GitOperationResult> {
   return executeGitCommand('diff', ['--cached', '--stat'], cwd);
 }
 

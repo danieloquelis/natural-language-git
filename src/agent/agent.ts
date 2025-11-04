@@ -1,5 +1,5 @@
 import { OperationSafety } from '../git-operations/index.js';
-import { generate } from '../llm/index.js';
+import { generate, generateFresh } from '../llm/index.js';
 import type { ParsedIntent } from './agent-common.js';
 import { IntentType, SYSTEM_PROMPT } from './agent-common.js';
 
@@ -98,33 +98,66 @@ For non-Git tasks, please use other tools. How can I help you with Git?`;
 }
 
 /**
- * Generate a commit message based on file changes
+ * Generate a commit message based on file changes following EU Component Library Git Conventions
  */
 export async function generateCommitMessage(
   changedFiles: string[],
-  diffStat: string
+  fullDiff: string
 ): Promise<string> {
-  const prompt = `Generate a concise git commit message (one line, max 50 chars) for these changes:
+  // Truncate diff if too long to avoid token limits
+  const maxDiffLength = 1500;
+  const truncatedDiff = fullDiff.length > maxDiffLength
+    ? fullDiff.substring(0, maxDiffLength) + '\n...(truncated)'
+    : fullDiff;
 
-Changed files:
-${changedFiles.map((f) => `- ${f}`).join('\n')}
+  // Extract scope from first file
+  const firstFile = changedFiles[0] || '';
+  const scopeGuess = firstFile.split('/').pop()?.replace(/\.(ts|js|tsx|jsx|md)$/, '') || 'core';
 
-Diff stats:
-${diffStat}
+  const prompt = `Write a git commit message.
 
-Respond with ONLY the commit message, no quotes, no explanation. Follow conventional commit style if applicable (feat:, fix:, docs:, etc).`;
+Format: type(scope): description
+Types: feat, fix, refactor, chore, docs
+Scope: ${scopeGuess}
+
+Files: ${changedFiles.join(', ')}
+
+${truncatedDiff}
+
+Commit message:`;
 
   try {
-    const response = await generate(prompt, {
+    // Use generateFresh to avoid JSON context from previous agent prompts
+    const response = await generateFresh(prompt, {
       temperature: 0.5,
-      maxTokens: 50,
+      maxTokens: 80,
     });
 
-    return response.text.trim().replace(/^["']|["']$/g, ''); // Remove quotes if any
+    // Clean up the response - extract just the commit message
+    let message = response.text.trim();
+
+    // Remove common conversational prefixes the LLM might add
+    message = message.replace(/^(based on|commit message|your message|message|here is|here's|commit|suggested commit message):?\s*/gi, '');
+
+    // If still has introductory text, try to find the actual commit message
+    const lines = message.split('\n');
+    for (const line of lines) {
+      const trimmed = line.trim();
+      // Look for a line that starts with a type (feat|fix|etc)
+      if (/^(feat|fix|refactor|chore|docs|test|perf|style)\(/i.test(trimmed)) {
+        message = trimmed;
+        break;
+      }
+    }
+
+    message = message.split('\n')[0]; // First line only
+    message = message.replace(/^["']|["']$/g, ''); // Remove quotes
+
+    return message.trim();
   } catch (error) {
     // Fallback to basic message if generation fails
     const mainFile = changedFiles[0] || 'files';
     const action = changedFiles.length > 1 ? 'update' : 'change';
-    return `${action} ${mainFile}`;
+    return `chore: ${action} ${mainFile}`;
   }
 }
