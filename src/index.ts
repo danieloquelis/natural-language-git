@@ -55,6 +55,39 @@ function showHelp() {
 }
 
 /**
+ * Determine the safety level of a single git command
+ */
+function getCommandSafety(command: string): OperationSafety {
+  const lowerCmd = command.toLowerCase();
+
+  // Check for cloud operations (highest priority)
+  if (lowerCmd.includes('push') || lowerCmd.includes('pull') || lowerCmd.includes('clone')) {
+    return OperationSafety.CLOUD;
+  }
+
+  // Check for destructive operations
+  if (
+    lowerCmd.includes('reset') ||
+    lowerCmd.includes('clean') ||
+    lowerCmd.includes('checkout') ||
+    lowerCmd.includes('rebase') ||
+    lowerCmd.includes('merge') ||
+    lowerCmd.includes('cherry-pick') ||
+    lowerCmd.includes('revert') ||
+    lowerCmd.includes('rm ') ||
+    lowerCmd.includes('branch -d') ||
+    lowerCmd.includes('branch -D') ||
+    lowerCmd.includes('stash drop') ||
+    lowerCmd.includes('stash clear')
+  ) {
+    return OperationSafety.DESTRUCTIVE;
+  }
+
+  // Default to safe
+  return OperationSafety.SAFE;
+}
+
+/**
  * Handle graceful exit on Ctrl+C
  */
 function setupGracefulExit() {
@@ -162,26 +195,6 @@ async function main() {
       }
       console.log();
 
-      // Check safety level
-      const requiresConfirmation =
-        intent.safety === OperationSafety.DESTRUCTIVE || intent.safety === OperationSafety.CLOUD;
-
-      if (requiresConfirmation) {
-        const warningMessage =
-          intent.safety === OperationSafety.CLOUD
-            ? 'This operation will interact with remote repositories.'
-            : 'This operation may be destructive.';
-
-        displayWarning(warningMessage);
-
-        const confirmed = await askConfirmation('Proceed?', false);
-
-        if (!confirmed) {
-          displayInfo('Operation cancelled.');
-          process.exit(0);
-        }
-      }
-
       // Execute commands
       let allSuccess = true;
       const outputs: string[] = [];
@@ -232,7 +245,8 @@ async function main() {
         const gitCommand = parts[0] || '';
         const args = parts.slice(1).map((arg) => arg.replace(/^"|"$/g, '')); // Remove quotes
 
-        // Check for commit command with empty or missing message
+        // Check for commit command with empty or missing message (BEFORE safety check)
+        // This ensures user sees and approves the commit message before being asked about subsequent operations
         if (gitCommand === 'commit' && (args.includes('-m') || args.includes('--message'))) {
           const messageIndex = args.findIndex((arg) => arg === '-m' || arg === '--message');
           const message = args[messageIndex + 1] || '';
@@ -279,6 +293,33 @@ async function main() {
               spinner.fail('Failed to generate message');
             }
           }
+        }
+
+        // Determine safety level of this specific command and ask for confirmation
+        // This happens AFTER commit message generation so user knows what they're committing
+        const commandSafety = getCommandSafety(trimmedCmd);
+
+        if (
+          commandSafety === OperationSafety.DESTRUCTIVE ||
+          commandSafety === OperationSafety.CLOUD
+        ) {
+          console.log();
+          displayInfo(`Next operation: ${trimmedCmd}`);
+
+          const warningMessage =
+            commandSafety === OperationSafety.CLOUD
+              ? 'This operation will interact with remote repositories.'
+              : 'This operation may be destructive.';
+
+          displayWarning(warningMessage);
+
+          const confirmed = await askConfirmation('Proceed with this operation?', false);
+
+          if (!confirmed) {
+            displayInfo('Operation cancelled. Stopping execution.');
+            break; // Stop executing remaining commands
+          }
+          console.log();
         }
 
         // Mark as interactive if it's an interactive command
